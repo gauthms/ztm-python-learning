@@ -1,7 +1,6 @@
 import requests
 import hashlib
-
-
+import sys
 
 def request_api_check(query_char):
     url = 'https://api.pwnedpasswords.com/range/' + query_char
@@ -10,17 +9,31 @@ def request_api_check(query_char):
         raise RuntimeError(f'Error fetching: {res.status_code}, check the api and try again')
     return res
 
-
 def get_password_leaks_count(hashes, hash_to_check):
     hashes = (line.split(":") for line in hashes.text.splitlines())
     for h, count in hashes:
-        print(h, count)
+        if h == hash_to_check:
+            return count
+    return 0
 
 def pwned_api_check(password):
     sha1password = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
-    first5_char, tail = sha1password[:5], sha1password[5:]
+    first5_char, tail = sha1password[:5], sha1password[5:] #k-anonymity method, only send first 5 characters of the hash to the API
     response = request_api_check(first5_char)
     return get_password_leaks_count(response, tail)
 
+def main(filename):
+    with open(filename, 'r') as file:
+        passwordList = file.read().splitlines()
+        print(passwordList)
+        for password in passwordList:
+            count = pwned_api_check(password)
+            if count:
+                print(f'{password} was found {count} times...you should probably change your password!')
+            else:
+                print(f'{password} was NOT found. Carry on!')
+    return 'done!'
 
-print(pwned_api_check('123'))
+
+if __name__ == '__main__':  
+  sys.exit(main(sys.argv[1])) #pass file as argument when running the script
