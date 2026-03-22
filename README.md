@@ -1,1 +1,1 @@
-Repo to keep track of projects done as part of the ZTM Python course:  [text](https://www.udemy.com/course/complete-python-developer-zero-to-mastery/learn/)
+Repo to keep track of projects done as part of the ZTM Python course:  [Link](https://www.udemy.com/course/complete-python-developer-zero-to-mastery/learn/)
